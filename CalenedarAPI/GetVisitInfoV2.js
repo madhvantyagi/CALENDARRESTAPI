@@ -7,9 +7,9 @@ dotenv.config();
 const { APP_NAME, APP_SECRET, APP_KEY } = process.env;
 
 const url = "https://app2.hhaexchange.com/integration/ent/v1.8/ws.asmx?WSDL";
-const extractData = new Array(31).fill(null).map(() => []);
 
 const GetVisitInfo = async (caregiverId) => {
+  const extractData = new Array(31).fill(null).map(() => []);
   try {
     // Get an array of Visit IDs from the SearchVisits method
     const VisitIDArray = await SearchVisits(caregiverId);
@@ -40,7 +40,8 @@ const GetVisitInfo = async (caregiverId) => {
           visitInfo.PrebillingProblems,
           visitInfo.ScheduleStartTime,
           visitInfo.ScheduleEndTime,
-          visitInfo.Patient
+          visitInfo.Patient,
+          extractData
         );
       } catch (e) {
         console.error(`Error fetching visit info for visit ${visit}:`, e);
@@ -59,7 +60,13 @@ const GetVisitInfo = async (caregiverId) => {
 };
 
 // filterData function remains unchanged
-const filterData = (PrebillingProblems, StartTime, EndTime, Patient) => {
+const filterData = (
+  PrebillingProblems,
+  StartTime,
+  EndTime,
+  Patient,
+  extractData
+) => {
   const date = new Date(StartTime);
   const indexTopush = date.getDate();
   // const timeCompare = parseInt(StartTime.split(" ")[1]);
