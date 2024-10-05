@@ -8,12 +8,12 @@ const { APP_NAME, APP_SECRET, APP_KEY } = process.env;
 
 const url = "https://app2.hhaexchange.com/integration/ent/v1.8/ws.asmx?WSDL";
 
-const GetVisitInfo = async (caregiverId) => {
+const GetVisitInfo = async (caregiverId, month) => {
   const extractData = new Array(31).fill(null).map(() => []);
   try {
     // Get an array of Visit IDs from the SearchVisits method
-    const VisitIDArray = await SearchVisits(caregiverId);
-    console.log(VisitIDArray);
+    const VisitIDArray = await SearchVisits(caregiverId, month);
+    // console.log(VisitIDArray);
     // Use map to create an array of promises
     const visitPromises = VisitIDArray.map(async (visit) => {
       const args = {
@@ -30,29 +30,25 @@ const GetVisitInfo = async (caregiverId) => {
       // Create the SOAP client
       const client = await soap.createClientAsync(url);
 
-      try {
-        // Call the SOAP API
-        const result = await client.GetVisitInfoV2Async(args);
+      // Call the SOAP API
+      const result = await client.GetVisitInfoV2Async(args);
 
-        // Extract the necessary data and filter it
-        const visitInfo = result[0]?.GetVisitInfoV2Result.VisitInfo;
-        filterData(
-          visitInfo.PrebillingProblems,
-          visitInfo.ScheduleStartTime,
-          visitInfo.ScheduleEndTime,
-          visitInfo.Patient,
-          extractData
-        );
-      } catch (e) {
-        console.error(`Error fetching visit info for visit ${visit}:`, e);
-      }
+      // Extract the necessary data and filter it
+      const visitInfo = result[0]?.GetVisitInfoV2Result.VisitInfo;
+      filterData(
+        visitInfo.PrebillingProblems,
+        visitInfo.ScheduleStartTime,
+        visitInfo.ScheduleEndTime,
+        visitInfo.Patient,
+        extractData
+      );
     });
 
     // Use Promise.all to wait for all API calls to complete
     await Promise.all(visitPromises);
     const data = JSON.stringify(extractData);
     // After all API calls are done, print or return the extractData array
-    console.log(data);
+    // console.log(data);
     return extractData; // You can return it from here if needed
   } catch (error) {
     console.error("Error in GetVisitInfo:", error);
