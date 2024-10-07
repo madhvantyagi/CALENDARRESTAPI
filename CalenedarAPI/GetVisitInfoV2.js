@@ -35,11 +35,14 @@ const GetVisitInfo = async (caregiverId, month) => {
 
       // Extract the necessary data and filter it
       const visitInfo = result[0]?.GetVisitInfoV2Result.VisitInfo;
+      console.log(visitInfo);
       filterData(
         visitInfo.PrebillingProblems,
         visitInfo.ScheduleStartTime,
         visitInfo.ScheduleEndTime,
         visitInfo.Patient,
+        visitInfo.VisitStartTime,
+        visitInfo.VisitEndTime,
         extractData
       );
     });
@@ -61,6 +64,8 @@ const filterData = (
   StartTime,
   EndTime,
   Patient,
+  VisitStartTime,
+  VisitEndTime,
   extractData
 ) => {
   const date = new Date(StartTime);
@@ -72,6 +77,8 @@ const filterData = (
     Starttime: StartTime,
     EndTime: EndTime,
     Patient: Patient,
+    VisitStartTime: VisitStartTime,
+    VisitEndTime: VisitEndTime,
   });
   if (extractData[indexTopush - 1].length > 1) {
     extractData[indexTopush - 1].sort((visit1, visit2) => {
